@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytest = "==6.2.4"
+pytest-mock = "*"
+pyinstaller = "==4.2"
+cpython = "*"
+Flask = "2.0.3"
+python-dotenv = "*"
+Flask-PyMongo = "2.3.0"
+pydantic = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
