@@ -7,7 +7,7 @@ class Word(BaseModel):
     position: int
 
     def to_json(self):
-        return json.dump({"name": self.name, "position": self.position})
+        return json.dumps({"word": self.word, "position": self.position})
 
     def to_bson(self):
         data = self.dict(by_alias=True, exclude_none=True)

@@ -1,6 +1,7 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, jsonify
 import flaskr
 from flaskr.words.model import Word
+
 words_blueprint = Blueprint('words', __name__)
 
 
@@ -11,11 +12,13 @@ def words():
         raw_word = request.get_json()
         current_app.logger.info(raw_word)
         word = Word(**raw_word)
-        insert_result = flaskr.pymongo.words.insert_one(word.to_bson())
+        insert_result = flaskr.pymongo.db.words.insert_one(word.to_bson())
 
-        return {}
+        # TODO db error handling
+        return word.to_json()
+
     elif request.method == 'GET':
-        items = flaskr.pymongo.words.find({})
-
-        return "Get"
-
+        items = flaskr.pymongo.db.words.find({}).sort("position", 1)
+        data = [item['word'] for item in list(items)]
+        current_app.logger.info(data)
+        return jsonify({"data": data})
