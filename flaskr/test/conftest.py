@@ -29,6 +29,6 @@ def initialized_db_client(empty_db_client):
             content_type='application/json',
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 201
 
     return empty_db_client

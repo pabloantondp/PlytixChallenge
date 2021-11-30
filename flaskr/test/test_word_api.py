@@ -51,7 +51,7 @@ def test_api_post(initialized_db_client):
     )
 
     data = json.loads(response.get_data(as_text=True))
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert len(data) == 2
     assert data['word'] == "calle"
     assert data['position'] == 3
@@ -70,6 +70,17 @@ def test_api_post(initialized_db_client):
     assert data[5] == "Malaga"
 
 
+def test_api_post_duplicate_key_error(initialized_db_client):
+    test_word = Word(word="caso", position=3)
+    response = initialized_db_client.post(
+        '/words',
+        data=test_word.to_json(),
+        content_type='application/json',
+    )
+
+    assert response.status_code == 400
+
+
 def test_api_patch(initialized_db_client):
     test_word = Word(word="calle", position=3)
     patch_data = {"position": 5}
@@ -78,7 +89,7 @@ def test_api_patch(initialized_db_client):
         data=test_word.to_json(),
         content_type='application/json',
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
 
     response = initialized_db_client.patch('/words/calle',
                                           data=json.dumps({"position": 5}),

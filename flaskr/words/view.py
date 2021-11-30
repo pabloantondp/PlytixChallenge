@@ -41,7 +41,8 @@ def init_my_blueprint():
     global words_collection
     words_collection = flaskr.pymongo.db.words
     current_app.logger.info('First app request')
-    words_collection.create_index([("name", ASCENDING), ("_id", DESCENDING)], unique=True)
+    words_collection.create_index([("word", ASCENDING)], unique=True)
+    words_collection.create_index([("word", ASCENDING), ("_id", DESCENDING)])
 
 
 @words_blueprint.route('/words', methods=['GET', 'POST'])
@@ -54,12 +55,12 @@ def words_path():
 
         insert_result = words_collection.insert_one(word.to_bson())
         # TODO db error handling
-        return word.to_json()
+        return word.to_json(), 201
 
     elif request.method == 'GET':
         items = words_collection.find({}).sort([("position", ASCENDING), ("_id", DESCENDING)])
         data = [item['word'] for item in items]
-        return jsonify({"data": data})
+        return jsonify({"data": data}), 200
 
 
 @words_blueprint.route('/words/<word>', methods=['PATCH', 'DELETE'])
