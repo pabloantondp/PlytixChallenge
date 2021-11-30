@@ -94,11 +94,33 @@ def test_api_delete_error(empty_db_client):
     assert response.status_code == 404
 
 
-def test_api_delete_error(empty_db_client):
-    response = empty_db_client.delete('/words/what')
-    assert response.status_code == 404
+def test_api_delete(initialized_db_client):
+    response = initialized_db_client.get('/words')
+
+    json_data = json.loads(response.get_data(as_text=True))
+    assert response.status_code == 200
+    data = json_data['data']
+    assert len(data) == 5
+    assert 'cosa' in data
+
+    response = initialized_db_client.delete('/words/cosa')
+    assert response.status_code == 204
+
+    response = initialized_db_client.get('/words')
+
+    json_data = json.loads(response.get_data(as_text=True))
+    assert response.status_code == 200
+    data = json_data['data']
+    assert len(data) == 4
+    assert 'cosa' not in data
 
 
-def test_api_patch_error(empty_db_client):
-    response = empty_db_client.delete('/words/what')
-    assert response.status_code == 404
+def test_api_delete(initialized_db_client):
+    response = initialized_db_client.get('/words/asco/anagrams')
+
+    json_data = json.loads(response.get_data(as_text=True))
+    assert response.status_code == 200
+    data = json_data['data']
+    assert len(data) == 2
+    assert data[0] == 'cosa'
+    assert data[1] == 'caso'

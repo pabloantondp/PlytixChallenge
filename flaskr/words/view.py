@@ -16,6 +16,11 @@ def resource_not_found(e):
     return jsonify(error=str(e)), 404
 
 
+@words_blueprint.app_errorhandler(405)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 404
+
+
 @words_blueprint.app_errorhandler(ValidationError)
 def resource_not_found(e):
     return jsonify(error=str(e)), 404
@@ -72,5 +77,13 @@ def word_path(word):
         return new_word.to_json()
 
     elif request.method == 'DELETE':
-        response = words_collection.delete_one({"word": word})
-        return 204
+        words_collection.delete_one({"word": word})
+        return '', 204
+
+
+@words_blueprint.route('/words/<word>/anagrams', methods=['GET'])
+def anagrams_path(word):
+    items = words_collection.find({"$expr": {"$eq": [{"$strLenCP": "$word"},  len(word)]}}).sort([("position", ASCENDING), ("_id", DESCENDING)])
+    sorted_word = sorted(word)
+    data = [item['word'] for item in items if sorted(item['word']) == sorted_word]
+    return jsonify({"data": data})
