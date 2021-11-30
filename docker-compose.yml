@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   mongodb:
-    image: mongo:4.2
+    image: mongo:4.4
     restart: always
     ports:
     - 27017:27017
@@ -20,3 +20,4 @@ services:
       - mongodb
     env_file:
       .env
+    network_mode: host
