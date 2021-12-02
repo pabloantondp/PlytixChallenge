@@ -14,6 +14,7 @@ api = Api(words_blueprint,
           )
 
 word_model = api.model('Word', {'word': fields.String, 'position': fields.Integer})
+word_list_model = api.model('WordList', {'data': fields.List(fields.String)})
 word_patch_model = api.model('WordPatch', {'position': fields.Integer})
 
 @words_blueprint.app_errorhandler(404)
@@ -46,7 +47,7 @@ class WordsPath(Resource):
 
     @api.response(201, 'Success')
     @api.response(400, 'Validation Error')
-    @api.doc(body=word_model)
+    @api.doc(body=word_model, model=word_model)
     def post(self):
         raw_word = request.get_json()
         word = Word(**raw_word).save()
@@ -54,6 +55,7 @@ class WordsPath(Resource):
         return make_response(word.to_json(), 201)
 
     @api.response(200, 'Success')
+    @api.doc(model=word_list_model)
     def get(self):
         items = Word.objects.order_by("position", "-id")
         current_app.logger.info(items)
@@ -67,6 +69,7 @@ class WordPath(Resource):
     @api.response(200, 'Success')
     @api.response(404, 'Not found')
     @api.doc(params={'word': 'A existing word listed by GET /words '},
+             model=word_model,
              body=word_patch_model)
     def patch(self, word):
         Word.objects.get_or_404(word=word)
