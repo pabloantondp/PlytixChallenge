@@ -1,16 +1,15 @@
 import json
-from pydantic import BaseModel
+from flaskr.database.db import db
 
 
-class Word(BaseModel):
-    word: str
-    position: int
+class Word(db.Document):
+    word = db.StringField(required=True, unique=True)
+    position = db.IntField(required=True, min_value=0)
 
+    meta = {
+        'indexes': [
+            ('position', '-id')  # compound index
+        ]
+    }
     def to_json(self):
         return json.dumps({"word": self.word, "position": self.position})
-
-    def to_bson(self):
-        data = self.dict(by_alias=True, exclude_none=True)
-        if data.get("_id") is None:
-            data.pop("_id", None)
-        return data

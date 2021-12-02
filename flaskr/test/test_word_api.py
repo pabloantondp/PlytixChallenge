@@ -16,7 +16,7 @@ def test_api_malformed_post(empty_db_client):
         content_type='application/json',
     )
 
-    assert response.status_code == 404
+    assert response.status_code == 400
 
 
 def test_api_count_empty(empty_db_client):
@@ -92,9 +92,10 @@ def test_api_patch(initialized_db_client):
     assert response.status_code == 201
 
     response = initialized_db_client.patch('/words/calle',
-                                          data=json.dumps({"position": 5}),
+                                          data=json.dumps(patch_data),
                                           content_type='application/json')
-    json_data = json.loads(response.get_data(as_text=True))
+    json_data = json.loads(response.get_data())
+
     assert response.status_code == 200
     assert json_data['word'] == "calle"
     assert json_data['position'] == 5
@@ -126,7 +127,7 @@ def test_api_delete(initialized_db_client):
     assert 'cosa' not in data
 
 
-def test_api_delete(initialized_db_client):
+def test_api_anagrams(initialized_db_client):
     response = initialized_db_client.get('/words/asco/anagrams')
 
     json_data = json.loads(response.get_data(as_text=True))

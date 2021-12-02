@@ -11,7 +11,8 @@ cpython = "*"
 Flask = "2.0.3"
 python-dotenv = "*"
 Flask-PyMongo = "2.3.0"
-pydantic = "*"
+flask-mongoengine = "*"
+flask-restx = "*"
 
 [dev-packages]
 
