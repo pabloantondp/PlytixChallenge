@@ -47,7 +47,8 @@ class WordsPath(Resource):
 
     @api.response(201, 'Success')
     @api.response(400, 'Validation Error')
-    @api.doc(body=word_model, model=word_model)
+    @api.expect(word_model)
+    @api.doc(model=word_model)
     def post(self):
         raw_word = request.get_json()
         word = Word(**raw_word).save()
@@ -68,9 +69,9 @@ class WordPath(Resource):
 
     @api.response(200, 'Success')
     @api.response(404, 'Not found')
+    @api.expect(word_patch_model)
     @api.doc(params={'word': 'A existing word listed by GET /words '},
-             model=word_model,
-             body=word_patch_model)
+             model=word_model)
     def patch(self, word):
         Word.objects.get_or_404(word=word)
 
@@ -99,7 +100,9 @@ class WordPath(Resource):
 @api.route('/words/<word>/anagrams')
 class AnagramsPath(Resource):
 
-    @api.doc(params={'word': 'A existing word listed by GET /words '})
+    @api.response(200, 'Success')
+    @api.response(404, 'Not found')
+    @api.doc(params={'word': 'A existing word listed by GET /words '}, model=word_list_model)
     def get(self, word):
         items = Word.objects(__raw__={"$expr": {"$eq": [{"$strLenCP": "$word"},  len(word)]}}).order_by("position", "-id")
 
